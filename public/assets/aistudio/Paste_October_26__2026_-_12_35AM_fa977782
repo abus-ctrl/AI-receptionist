@@ -1,0 +1,1022 @@
+# MASTER DEVELOPMENT PROMPT — WONDERLAND ARCADE MANAGEMENT SYSTEM
+## Complete Full-Stack Application | All Phases | Free-First Technology Stack
+
+You are a senior full-stack software architect, product manager, UI/UX designer, database engineer, QA engineer and DevOps engineer.
+
+Your responsibility is to BUILD a complete, functional, secure and maintainable application called **Wonderland Arcade Management System**.
+
+Do not merely create a prototype, mockup, design, or implementation plan. Implement the application in the existing codebase, connect the frontend to a real database, implement business logic, test the system, and prepare it for deployment.
+
+Develop every phase defined in this specification. Work sequentially, maintain an implementation status file, run tests after each phase, and continue until all phases are implemented or a genuine technical blocker is identified.
+
+Do not claim that a feature is complete merely because its interface exists.
+
+---
+
+# PART 1 — PRODUCT VISION AND BUSINESS OBJECTIVES
+
+Wonderland is an entertainment arcade that offers multiple games and activities, including PlayStation gaming, snooker, soft play, arcade games, VR experiences, chair massage and other entertainment products.
+
+The owner currently manages portions of the business through an Excel workbook. The receptionist needs a faster way to manage customers, game sessions, entry and exit times, resource availability and payments.
+
+The application must solve these operational problems:
+
+1. A customer arrives and provides their name and mobile number.
+2. The receptionist finds or creates the customer record.
+3. The receptionist selects the game or games and assigns available resources.
+4. The system starts an independent timer for each timed game session.
+5. The application tracks the scheduled end time and provides a configurable five-minute grace period.
+6. The receptionist receives a visible notification when a session is due and when it becomes overdue.
+7. The receptionist extends the session or records the customer's logout.
+8. The relevant game resource becomes available again after the session ends.
+9. The application records invoices, payments, packages and game usage.
+10. The owner can view sales, confirmed collections, game popularity, customer counts, outstanding amounts and business performance.
+
+Build a responsive application that works on desktop, tablet and mobile browsers.
+
+The primary users are:
+- Owner or administrator.
+- Receptionist or front-desk operator.
+
+Customers do not need to create online accounts. The receptionist manages their visits.
+
+The first release is for one arcade location, but use a data model that can support additional locations later without requiring a complete redesign.
+
+# PART 2 — FREE-FIRST TECHNOLOGY STACK
+
+Use the following tools wherever appropriate.
+
+Frontend:
+- React.
+- TypeScript.
+- Vite.
+- A maintained, accessible component library or a consistent custom component system.
+- Responsive layouts.
+- A charting library for business reports.
+
+Backend:
+- Supabase.
+- PostgreSQL.
+- Supabase Auth.
+- Row Level Security.
+- Supabase Realtime where useful.
+- Server-side database functions or Edge Functions for sensitive business operations.
+
+Development:
+- Visual Studio Code.
+- GitHub.
+- GitHub Copilot Free or another available coding assistant.
+- Automated tests.
+- Version-controlled database migrations.
+
+Deployment:
+- Cloudflare Pages for the web frontend, subject to its applicable free-tier terms.
+- Supabase for the backend, subject to its applicable free-tier limits.
+- GitHub for source control.
+
+Use free and open-source libraries where practical.
+
+Do not require a paid AI application builder.
+
+Do not add paid services unless they are necessary for a feature and there is no reasonable free alternative. Identify all external service costs before implementing a paid integration.
+
+Do not expose Supabase service-role keys, database passwords, private API keys or other server secrets in frontend code.
+
+# PART 3 — EXECUTION CONTRACT
+
+Before changing any code:
+
+1. Inspect the existing project files.
+2. Inspect the attached Wonderland workbook.
+3. Check the installed tooling and configuration.
+4. Identify existing functionality that can be reused.
+5. Create an implementation plan and a list of actual dependencies.
+6. Create the initial database schema design and a written list of business assumptions.
+
+Create and maintain these project documents:
+
+- `README.md`
+- `IMPLEMENTATION_STATUS.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DATABASE_SCHEMA.md`
+- `docs/BUSINESS_RULES.md`
+- `docs/TEST_PLAN.md`
+- `docs/DEPLOYMENT.md`
+- `docs/INTEGRATIONS.md`
+
+The status file must list every phase, the features implemented, tests completed, known defects, required credentials and remaining work.
+
+Do not stop after generating documentation or a plan. Begin implementing the application.
+
+Implement features in small, testable groups. Run the relevant tests and fix failures before moving on.
+
+If the execution environment reaches a context, token or tool limit, preserve progress in `IMPLEMENTATION_STATUS.md`. Continue from that recorded state in the next interaction instead of restarting the project.
+
+Do not repeatedly rewrite working files, replace the architecture without reason, or build duplicate components.
+
+Do not ask for information that can reasonably be represented by configurable settings. Use safe defaults, document assumptions and provide administrator controls for uncertain business rules.
+
+However, do not fabricate real transaction records, prices, resource counts, credentials or payment confirmations.
+
+# PART 4 — PHASE 0: WORKBOOK INSPECTION AND DATA MAPPING
+
+Inspect the complete workbook at:
+
+`data/Wonderland.xlsm.xlsx`
+
+If the file is unavailable, report the exact missing path and explain how to place it in the project. Continue building the application using an explicitly labelled development dataset, without presenting sample data as real business information.
+
+Inspect every worksheet, including:
+
+- `SALE`
+- `GAME LIST`
+- `SUMMARY`
+- `Package`
+- `Package History`
+- `Dashboard`
+- `Dashboard_Data`
+- `DASH_HELPER`
+- `DashboardData`
+
+Inspect actual cell values, relevant formulas, used ranges and data types.
+
+Treat the workbook as a source of business data, not as application storage.
+
+Do not execute workbook macros or depend on existing Excel macros in the new application.
+
+The `GAME LIST` sheet is the initial reference for the catalogue and listed prices. The existing sales and package sheets are the reference for field mapping and historical reporting.
+
+Distinguish between:
+- Actual transaction records.
+- Formulas and summary data.
+- Product catalogue entries.
+- Package definitions.
+- Customer package balances.
+- Package consumption history.
+
+Never reconstruct missing transactions from aggregate dashboard totals.
+
+Create a workbook import process that:
+- Reads the original workbook.
+- Maps source columns to application fields.
+- Identifies duplicate records.
+- Detects missing or malformed dates and amounts.
+- Flags unknown game names.
+- Preserves source invoice identifiers.
+- Produces an import preview.
+- Allows the administrator to confirm the import.
+- Produces a final import validation report.
+
+Do not overwrite the source workbook.
+
+Do not silently discard invalid rows or guess ambiguous values.
+
+# PART 5 — PHASE 1: APPLICATION FOUNDATION AND AUTHENTICATION
+
+Create the complete application shell.
+
+## Staff login
+
+Implement:
+- Secure login.
+- Logout.
+- Session persistence.
+- Unauthorized-access handling.
+- Password recovery using a secure supported flow.
+- Owner and receptionist roles.
+
+Do not implement a shared hardcoded production password.
+
+Provide a safe method for creating the first owner account.
+
+Do not include production credentials in the source repository.
+
+## Navigation
+
+Create these main sections:
+
+1. Dashboard
+2. New Check-In
+3. Active Sessions
+4. Customers
+5. Games and Resources
+6. Packages
+7. Sales and Invoices
+8. Payments
+9. Reports
+10. Settings
+
+A module that has not yet been implemented must be clearly marked as unavailable during development rather than appearing operational.
+
+## Interface requirements
+
+Create a clean, professional, responsive interface with:
+- Readable typography.
+- Large controls suitable for a busy reception desk.
+- Clear form validation.
+- Searchable tables.
+- Keyboard accessibility.
+- Appropriate loading and error states.
+- Confirmation dialogs for consequential actions.
+- Status indicators that combine text with visual styling.
+- Usable layouts on desktop, tablet and mobile.
+
+Prioritize speed of use over decorative elements.
+
+The receptionist should not have to navigate through several unrelated pages to register a customer and start a game.
+
+# PART 6 — PHASE 2: GAME CATALOGUE AND RESOURCE MANAGEMENT
+
+Import the initial catalogue using the workbook.
+
+Treat the following product information as the initial configuration. Validate it against the workbook before finalizing the import.
+
+All prices are in Indian rupees.
+
+## Arcade products
+
+| Product | Listed Price |
+|---|---:|
+| Basket ball | ₹49 |
+| Air Hockey | ₹49 |
+| Car racing | ₹79 |
+| Kiddie horse | ₹29 |
+| Kiddie car | ₹29 |
+| Frog hitting | ₹29 |
+| Kiddie gun firing | ₹29 |
+| Kiddie car racing | ₹29 |
+| Kiddie bike racing | ₹29 |
+| Kiddie fishing | ₹29 |
+
+Where the workbook does not specify a duration, configure the item as a quantity-based or unit-based product initially. Do not invent a timer duration.
+
+## Snooker and pool
+
+| Product | Price | Duration | Listed Players |
+|---|---:|---:|---:|
+| 8-Ball Table | ₹199 | 60 minutes | 4 |
+| Snooker Table | ₹199 | 60 minutes | 4 |
+
+## PlayStation
+
+| Product | Price | Duration | Listed Players |
+|---|---:|---:|---:|
+| PS 1 Player | ₹89 | 60 minutes | 1 |
+| PS 1 Player | ₹59 | 30 minutes | 1 |
+| PS 2 Player | ₹159 | 60 minutes | 2 |
+| PS 2 Player | ₹99 | 30 minutes | 2 |
+| PS 3 Player | ₹199 | 60 minutes | 3 |
+| PS 3 Player | ₹119 | 30 minutes | 3 |
+| PS 4 Player | ₹239 | 60 minutes | 4 |
+| PS 4 Player | ₹139 | 30 minutes | 4 |
+| Car simulator | ₹179 | 60 minutes | 1 |
+| Car simulator | ₹109 | 30 minutes | 1 |
+
+Represent these as purchasable product variants with their listed durations and player counts.
+
+The number of players is not the same as the number of consoles. A four-player product must not automatically consume four consoles.
+
+## VR products
+
+| Product | Listed Price |
+|---|---:|
+| Video Experience | ₹69 |
+| Gaming Experience | ₹149 |
+
+The workbook does not specify durations for these products. Allow the owner to configure durations or retain per-play pricing.
+
+## Meta Bat Cricket
+
+| Product | Listed Price |
+|---|---:|
+| Meta Bat — Per Over | ₹29 |
+
+Record the number of overs sold. Do not assume an arbitrary elapsed-time duration.
+
+## Chair massager
+
+| Product | Price | Duration |
+|---|---:|---:|
+| Full Body | ₹99 | 10 minutes |
+| Full Body | ₹149 | 20 minutes |
+| Full Body | ₹199 | 30 minutes |
+| Leg Only | ₹39 | 10 minutes |
+| Stand/Sit | ₹39 | 10 minutes |
+
+## Soft play
+
+| Product | Price | Duration or Entitlement |
+|---|---:|---|
+| Half Hour | ₹99 | 30 minutes |
+| One Hour | ₹149 | 60 minutes |
+| Unlimited day pass | ₹249 | Configurable validity window |
+
+Treat the unlimited day pass as a validity-based entitlement. Configure the business-day boundary and closing time.
+
+Track occupancy according to configurable soft-play capacity. Do not assume that soft play is a single-customer resource.
+
+## Resource administration
+
+Build an owner-facing resource management interface where authorized staff can define the number of actual:
+- PS5 consoles.
+- Snooker tables.
+- 8-ball tables.
+- Chair massagers.
+- VR stations.
+- Other individually limited-capacity resources.
+
+Treat these counts as administrator-configured values. The product catalogue does not establish the physical count.
+
+Each resource must have:
+- Unique identifier.
+- Display name.
+- Associated game or activity.
+- Availability state.
+- Optional maintenance state.
+- Capacity settings, when applicable.
+
+Support:
+- Available.
+- Occupied.
+- Temporarily unavailable.
+- Under maintenance.
+
+For soft play or another shared space, enforce its configured capacity rather than assigning fictitious individual resources.
+
+All availability checks must be enforced by the backend, not only by the frontend.
+
+# PART 7 — PHASE 3: CUSTOMERS, VISITS AND LIVE GAME SESSIONS
+
+This is the most important operational module.
+
+## Customer profile
+
+Store:
+- Customer name.
+- Normalized mobile number.
+- Creation date.
+- Optional non-sensitive notes.
+- Customer visit history.
+
+Search customers by name and phone number.
+
+Normalize Indian mobile numbers so that +91 formatting differences do not create duplicate customer profiles.
+
+Do not use the customer's phone number as the primary database key.
+
+## Customer visit
+
+A visit represents the customer's attendance at the arcade.
+
+One visit may contain multiple game sessions, individual product purchases and payments.
+
+The same customer can return on another day and create a separate visit.
+
+## New Check-In screen
+
+Create a prominent `New Check-In` action.
+
+The form must include:
+- Customer lookup.
+- Customer name.
+- Mobile number.
+- Game or product selection.
+- Resource assignment, where applicable.
+- Product variant or duration.
+- Quantity, where applicable.
+- Package selection, where applicable.
+- Price preview.
+- Optional staff notes.
+
+After selection, show a summary before confirmation.
+
+## Independent session timers
+
+Each timed game session must store:
+- Customer ID.
+- Visit ID.
+- Game/product ID.
+- Resource ID, where applicable.
+- Actual start timestamp.
+- Scheduled end timestamp.
+- Configured grace period.
+- Grace deadline.
+- Actual logout timestamp.
+- Session status.
+- Original rate and applicable price.
+- Extension history.
+- Staff member who started the session.
+- Staff member who ended the session.
+
+Calculate scheduled end time from the actual start timestamp plus the selected duration.
+
+Calculate the grace deadline from the scheduled end timestamp plus the configured grace period.
+
+Use server-generated or server-validated timestamps.
+
+Calculate displayed remaining time from stored timestamps. Do not rely on a JavaScript counter as the source of truth.
+
+Multiple sessions for the same customer must run independently.
+
+Starting a second game must not restart the first game's timer.
+
+Prevent duplicate or overlapping assignments of a single-capacity resource. Handle resource allocation inside a safe database transaction or equivalent concurrency-controlled server operation.
+
+## Five-minute grace period
+
+Set the initial grace period to five minutes, configurable by the owner.
+
+At the scheduled end time:
+- Change the session state to Due.
+- Display an in-app alert asking the receptionist to inform the customer.
+- Show the customer, game, resource and expiry time.
+
+After the configured grace period:
+- Change the state to Overdue.
+- Highlight the elapsed overdue duration.
+- Keep the session visible until resolved.
+
+The grace period is an operational buffer. It must not automatically create additional paid minutes, alter the invoice or silently extend the session.
+
+## Session actions
+
+Implement:
+- Start Session.
+- View Session.
+- Extend Session.
+- End Session / Logout.
+- Cancel Session, when permitted.
+- View Customer History.
+
+Ending a session must:
+- Record the actual end timestamp.
+- Calculate the actual elapsed duration.
+- Update the session state.
+- Release the resource when its capacity rules permit.
+- Preserve the session history.
+- Record the staff action in an audit log.
+
+Extending a session must:
+- Ask the receptionist for the additional time.
+- Show any configured extension charge.
+- Recalculate the scheduled end and grace deadline.
+- Preserve the original duration and extension history.
+- Record the staff member and timestamp.
+
+If a session has already expired, extension must explicitly update the state and deadlines. Do not create a duplicate overlapping session.
+
+Cancellation must retain an audit record and appropriate reason.
+
+## Active Sessions dashboard
+
+Display:
+- Customer.
+- Game.
+- Resource.
+- Start time.
+- Scheduled end.
+- Countdown.
+- Session status.
+- Duration.
+- Amount, when configured.
+- Payment status, where available.
+
+Support filters and search by customer, phone number, game, resource and status.
+
+Handle multiple simultaneous expirations without losing notifications.
+
+Refreshing or reopening the browser must not reset timers.
+
+When the application reconnects after a network interruption, it must retrieve and display the authoritative session state.
+
+# PART 8 — PHASE 4: PACKAGES, PRICING, COMBOS AND INVOICES
+
+Import the following package definitions from the workbook and verify them against the source.
+
+| Package | Price | Allocated Minutes | Listed Players |
+|---|---:|---:|---:|
+| PKG Snooker Table 30 D | ₹4,999 | 1,800 | 4 |
+| PKG Snooker Table 15 D | ₹2,499 | 900 | 4 |
+| PKG Playstation 30 D | ₹1,799 | 1,800 | 1 |
+| PKG Playstation 15 D | ₹999 | 900 | 1 |
+
+Treat the `30 D` and `15 D` naming as the proposed validity period in days, subject to administrator confirmation.
+
+For every purchased customer package, store:
+- Customer.
+- Purchase invoice.
+- Package definition.
+- Purchase timestamp.
+- Activation timestamp.
+- Expiry timestamp.
+- Allocated minutes.
+- Remaining minutes.
+- Amount charged.
+- Discount.
+- Payment status.
+- Usage history.
+
+Keep package validity separate from the remaining-minute balance.
+
+Consume package minutes only for eligible activities and according to a clearly documented policy.
+
+Prevent package use when expired or insufficiently funded unless an authorized business rule explicitly permits it.
+
+Handle interrupted sessions and corrections without silently losing minutes.
+
+Implement package usage history and administrative correction logs.
+
+## Pricing management
+
+Allow the owner to configure:
+- Product price.
+- Session duration.
+- Quantity-based pricing.
+- Additional time rates.
+- Packages.
+- Combo offers.
+- Discounts.
+- Optional taxes, if configured for the business.
+- Effective date for price changes.
+- Product availability.
+
+Do not invent taxes or additional charges.
+
+Changing a current catalogue price must not rewrite historical invoices or existing session prices.
+
+## Sales and invoices
+
+Create an invoice and checkout workflow that supports:
+- Multiple line items.
+- Game sessions.
+- Unit-based products.
+- Quantity and per-over products.
+- Package purchases.
+- Configured combo offers.
+- Discounts.
+- Total invoice amount.
+- Payments against the invoice.
+- Outstanding balance.
+- Invoice number.
+- Date and time.
+- Customer details.
+- Payment history.
+
+Support cash and UPI as initial payment methods, with additional methods configurable.
+
+Allow partial payments where necessary.
+
+Treat these as separate records:
+- Product purchase.
+- Invoice.
+- Payment transaction.
+- Payment allocation.
+- Package entitlement.
+- Game session.
+
+Do not double-count money when an invoice contains multiple items or when several payment transactions settle the same invoice.
+
+The workbook does not establish additional combo offers beyond the listed packages. Build a configurable feature, but do not fabricate combo names or prices.
+
+# PART 9 — PHASE 5: OWNER DASHBOARD AND BUSINESS ANALYTICS
+
+Build a dashboard that provides an accurate view of the business.
+
+## Operational KPIs
+
+Display:
+- Active sessions.
+- Sessions ending soon.
+- Due sessions.
+- Overdue sessions.
+- Available resources.
+- Occupied resources.
+- Today's session count.
+- Today's unique customer count.
+
+## Sales KPIs
+
+Display:
+- Total sales value.
+- Confirmed amount collected.
+- Total invoices.
+- Unique customers.
+- Total items or game quantities sold.
+- Total discounts.
+- Average invoice value.
+- Average items per invoice.
+- Outstanding invoice amount.
+- Unmatched payment count.
+
+Keep sales value distinct from actual money collected.
+
+## Game-wise usage report
+
+Display:
+- Sessions per game.
+- Unique customers per game.
+- Total minutes consumed.
+- Average session duration.
+- Resource utilization.
+- Game-wise invoice value.
+- Game-wise confirmed receipts, where allocation is reliable.
+- Most popular games.
+
+A customer who uses the same game twice counts as two sessions but one unique customer for the reporting period.
+
+Do not assume that one invoice line automatically corresponds to one game session.
+
+## Payment summary
+
+Display:
+- UPI amount.
+- Cash amount.
+- Other configured payment methods.
+- Confirmed receipts.
+- Partial payments.
+- Unpaid invoices.
+- Unmatched payment transactions.
+- Pending reconciliation.
+- Refunds or reversals, if supported.
+
+Include date-range filters and reporting-period definitions.
+
+Use the Asia/Kolkata timezone as the initial default, with administrator configuration if necessary.
+
+Define and document business-day boundaries.
+
+Do not populate reports with invented historical transactions. When the existing workbook lacks the underlying records, show a clear notice that historical detail is unavailable.
+
+# PART 10 — PHASE 6: PAYMENT MANAGEMENT AND UPI RECONCILIATION
+
+Implement a real payment-recording module.
+
+The minimum reliable version must allow the receptionist to:
+- Record the amount received.
+- Select payment method.
+- Add the transaction reference when available.
+- Associate a payment with an invoice, visit or session.
+- Record the timestamp.
+- Review payment status.
+- Identify outstanding balances.
+- Correct mistaken associations through an audited workflow.
+
+Support payment statuses such as:
+- Pending.
+- Confirmed.
+- Partially allocated.
+- Unmatched.
+- Reversed or refunded, where applicable.
+
+## UPI automation
+
+Investigate an official merchant payment-provider API, payment webhook or authorized bank reconciliation method before proposing direct SMS ingestion.
+
+Do not assume that a browser can read incoming SMS messages.
+
+Do not bypass device permissions or collect the entire SMS history.
+
+If direct SMS ingestion is required, treat it as a separately designed native Android integration subject to platform permissions, compliance requirements and distribution feasibility. It must not be a dependency for the web application.
+
+Do not confirm a payment merely because an SMS contains a similar amount.
+
+Prefer a verified provider event or authorized reconciliation source.
+
+When a reliable transaction match is unavailable, place the transaction in a Pending Reconciliation queue.
+
+Prevent duplicate messages or repeated webhooks from creating duplicate payment records.
+
+Store a unique source transaction identifier or reference where available.
+
+Validate payment source, amount, status, timestamp and transaction identity.
+
+Do not match transactions solely by amount and approximate time when multiple payments could be candidates.
+
+Keep unconfirmed and unmatched transactions out of confirmed-receipt totals.
+
+For a zero-cost initial release, implement reliable manual payment recording and an optional controlled transaction-import workflow. Keep the architecture ready for a future official payment integration.
+
+Do not store UPI PINs, banking passwords, card security codes or unnecessary sensitive banking data.
+
+# PART 11 — PHASE 7: EXPIRY NOTIFICATIONS AND WHATSAPP
+
+Implement a notification system for game-session expiry.
+
+At minimum, the application must:
+- Display a due notification at the scheduled end.
+- Display overdue alerts after the grace deadline.
+- Preserve multiple simultaneous notifications.
+- Allow acknowledgment.
+- Record acknowledgment timestamps.
+- Record notification delivery status when an external channel is used.
+- Recover pending alerts after reconnection.
+
+Do not claim an alert can be delivered while the browser is closed unless a properly configured background notification mechanism supports it.
+
+For reliable background processing, use supported scheduled jobs or a server-side notification worker, with retry handling and duplicate prevention.
+
+## WhatsApp integration
+
+Design an adapter for an approved WhatsApp Business integration.
+
+Potential events include:
+- Session ending.
+- Session overdue.
+- Optional customer session reminders.
+- Operational notifications for the owner or receptionist.
+
+Use supported business messaging APIs and comply with applicable consent and template requirements.
+
+Do not send unsolicited messages merely because a customer phone number is available.
+
+Keep the app's in-app notifications operational if WhatsApp is unavailable.
+
+Store provider credentials securely on the server.
+
+Log delivery failures and implement bounded retries.
+
+Do not make WhatsApp a dependency for session timing, resource allocation or logout.
+
+Identify any messaging charges and setup prerequisites in the documentation. Never claim that a paid or approval-dependent integration is free or activated when it is not.
+
+# PART 12 — PHASE 8: REPORTS, IMPORTS, EXPORTS AND RECONCILIATION
+
+Create downloadable reports for:
+- Daily sales.
+- Date-range sales.
+- Invoice details.
+- Customer visits.
+- Game sessions.
+- Game-wise activity.
+- Resource utilization.
+- Package balances.
+- Package usage history.
+- Payment transactions.
+- Outstanding balances.
+- Unmatched transactions.
+- Staff actions.
+
+Support CSV or Excel export where practical.
+
+Provide import validation and preview screens for catalogue and historical records.
+
+Detect:
+- Duplicate invoices.
+- Duplicate payment references.
+- Missing dates.
+- Inconsistent customer numbers.
+- Invalid amounts.
+- Unknown products.
+- Missing session durations.
+- Invalid resource assignments.
+
+Do not silently delete invalid rows.
+
+Document which fields cannot be imported reliably from the source workbook.
+
+For financial and historical data, retain source identifiers and an import audit trail.
+
+# PART 13 — PHASE 9: SECURITY, RECOVERY AND PRODUCTION READINESS
+
+Implement:
+- Secure authentication.
+- Role-based authorization.
+- Supabase Row Level Security.
+- Server-side validation.
+- Database constraints.
+- Audit logs.
+- Safe error handling.
+- Input validation.
+- Rate limiting where applicable.
+- Secure environment configuration.
+- Database migrations.
+- Backup and recovery documentation.
+- Data export procedures.
+- Test and production environment separation.
+
+The owner can manage users, product catalogue, resources, pricing, packages, reports, settings and authorized corrections.
+
+The receptionist can register customers, start and end sessions, extend sessions, view operational status and record payments according to assigned permissions.
+
+Sensitive operations must be protected by server-side authorization.
+
+Never assume that hiding a button in the frontend is sufficient security.
+
+Never expose privileged database credentials.
+
+Do not log entire payment payloads, credentials or unnecessary customer-sensitive information.
+
+## Data resilience
+
+Active sessions must remain correct after:
+- Browser refresh.
+- Browser restart.
+- Network interruptions.
+- Signing in on a second authorized device.
+- Server or client process restart.
+
+Database writes must be safe against duplicate operations.
+
+Implement concurrency protection for resource allocation and package-minute deductions.
+
+Provide a documented recovery procedure for interrupted sessions.
+
+A backup plan must not assume that the free hosting provider guarantees unlimited retention or automatic downloadable backups. Test a restore procedure and document any free-tier limitations.
+
+# PART 14 — DATABASE DESIGN
+
+Create a normalized relational database with appropriate primary keys, foreign keys, constraints, indexes and timestamps.
+
+Use, at minimum, the following entities:
+
+1. `locations`
+2. `profiles`
+3. `customers`
+4. `visits`
+5. `game_categories`
+6. `products`
+7. `product_variants`
+8. `resources`
+9. `resource_capacity`
+10. `sessions`
+11. `session_extensions`
+12. `packages`
+13. `customer_packages`
+14. `package_usage`
+15. `invoices`
+16. `invoice_items`
+17. `payments`
+18. `payment_allocations`
+19. `payment_imports`
+20. `notifications`
+21. `audit_logs`
+22. `import_jobs`
+
+Adjust this schema when the implementation requires it, but document the reason.
+
+One customer may have many visits. One visit may contain several game sessions. One invoice may contain multiple line items. A package entitlement is separate from the payment transaction that purchased it.
+
+Use database transactions or equivalent atomic server-side operations for:
+- Starting a session and reserving its resource.
+- Ending a session and releasing its resource.
+- Extending a session.
+- Deducting package minutes.
+- Recording payments and allocating amounts to invoices.
+
+Do not use client-side validation as the only defence against double resource allocation or duplicate payments.
+
+Store timestamps in a consistent timezone-safe representation and display them in the configured business timezone.
+
+Provide migrations for all schema changes. Do not rely exclusively on manual edits to a hosted database.
+
+# PART 15 — TESTING AND ACCEPTANCE CRITERIA
+
+Implement unit tests, integration tests and, where practical, end-to-end tests.
+
+## Customer workflow
+
+Verify that:
+- A new customer can be registered.
+- A returning customer can be found.
+- Duplicate customer profiles are minimized.
+- A customer can visit multiple times.
+- A single visit can contain multiple independent sessions.
+- The same customer can use PS5 and snooker without the timers interfering.
+
+## Resource workflow
+
+Verify that:
+- Available resources can be assigned.
+- Occupied resources cannot be assigned again.
+- Simultaneous receptionist actions cannot reserve the same single-capacity resource twice.
+- A resource becomes available after the applicable logout and capacity rules permit it.
+- Maintenance resources cannot be assigned.
+- Soft-play capacity cannot be exceeded.
+
+## Timer workflow
+
+Verify that:
+- Scheduled end times are calculated correctly.
+- The countdown uses persisted timestamps.
+- Due alerts appear at expiry.
+- Overdue state occurs after the five-minute grace period.
+- Dismissing an alert does not end the session.
+- Extensions correctly adjust deadlines.
+- Logout records the actual end time.
+- Refreshing the browser does not reset the timer.
+- Several simultaneous alerts are preserved.
+
+## Sales and packages
+
+Verify that:
+- Product prices are frozen on invoice line items.
+- Package validity is independent of remaining minutes.
+- Package use is recorded in history.
+- Duplicate minute deductions are prevented.
+- Partial payments are supported where configured.
+- Invoice balances are accurate.
+- Refunds or corrections do not silently erase the audit trail.
+
+## Payment workflow
+
+Verify that:
+- Confirmed payments increase confirmed receipts correctly.
+- Unmatched payments do not increase confirmed receipts.
+- Duplicate transaction imports do not double-count money.
+- A payment cannot be allocated beyond permitted amounts without an explicit supported workflow.
+- Payment and invoice totals remain consistent.
+
+## Security
+
+Verify that:
+- Unauthorized staff cannot access restricted pages or operations.
+- Database permissions prevent unauthorized reads and writes.
+- Privileged keys do not appear in frontend bundles.
+- Audit logs preserve important changes.
+
+Create a final acceptance report stating which tests passed, which failed, and what limitations remain.
+
+Do not report tests as passed unless they were actually run successfully.
+
+# PART 16 — DEPLOYMENT AND DELIVERY
+
+Prepare the application for deployment using the free-first stack.
+
+Deliver:
+- Complete source code.
+- Database migration files.
+- Supabase setup instructions.
+- Secure environment-variable templates.
+- Workbook import instructions.
+- Local development commands.
+- Automated test commands.
+- Deployment instructions for the frontend.
+- Authentication setup instructions.
+- Backup and restore procedures.
+- Instructions for creating the first owner account.
+- A list of required external credentials for optional integrations.
+- A documented list of free-tier limitations and possible operational costs.
+
+Use environment-specific configuration for development and production.
+
+Do not commit actual `.env` files containing secrets.
+
+Verify the production build locally and run the required tests before deployment.
+
+Do not report that a cloud integration or deployment has succeeded unless it has actually been configured and verified.
+
+Where the development environment lacks access to an account, API key or hosted service, implement the integration boundary, document the missing configuration and provide reproducible setup instructions.
+
+# PART 17 — FINAL COMPLETION REQUIREMENTS
+
+The finished application must provide the following complete workflows:
+
+### Workflow A: Walk-in customer
+
+Register or find a customer, select a game, assign a resource, select duration, start the timer, display the countdown, receive expiry alerts, extend the session or log out the customer, and preserve history.
+
+### Workflow B: Multiple games
+
+Allow one customer visit to contain separate PS5, snooker or other game sessions, each with independent timing and resource assignment.
+
+### Workflow C: Packages
+
+Sell a package, record the invoice and payment, create a customer entitlement, track validity and minutes, deduct usage and show the remaining balance.
+
+### Workflow D: Checkout
+
+Create an invoice from eligible products or sessions, record payments, calculate outstanding balances and preserve a financial audit trail.
+
+### Workflow E: Owner dashboard
+
+Show accurate sales, confirmed receipts, payment methods, sessions, unique customers, game-wise usage and outstanding amounts for the selected period.
+
+### Workflow F: Reconciliation
+
+Import or receive supported payment transaction data, prevent duplication, match transactions when supported, and route uncertain cases to manual review.
+
+### Workflow G: Notifications
+
+Display due and overdue alerts, preserve pending notifications, and use optional external notification integrations without making them essential to core session operations.
+
+### Workflow H: Administration
+
+Manage users, games, products, rates, physical resources, packages, settings, imports and reports according to permissions.
+
+### Workflow I: Deployment and recovery
+
+Deploy the frontend, connect the backend, configure authentication, validate security, back up business data and document restoration.
+
+## Final instruction to the development agent
+
+Implement all phases in the specified order.
+
+Start by inspecting the existing codebase and the Wonderland workbook, then build the database foundation, authentication, and the operational check-in workflow.
+
+Continue through catalogue management, session timing, packages, sales, analytics, reconciliation, notifications, reports, security and deployment.
+
+Do not stop after producing a plan, do not build fake functionality, do not fabricate business data, and do not claim that an integration works until it has been tested.
+
+Maintain `IMPLEMENTATION_STATUS.md` throughout development and use it to record the actual state of each feature.
+
+The ultimate objective is a reliable arcade management application that Wonderland's receptionist can use during real business hours and that the owner can trust for operational and financial reporting.

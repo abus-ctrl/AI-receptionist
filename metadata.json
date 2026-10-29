@@ -1,0 +1,6 @@
+{
+  "name": "Wonderland Arcade Management System",
+  "description": "Comprehensive full-stack arcade operations, live session timers, customer visits, resource allocations, packages, POS invoicing, UPI payment reconciliation, and analytics for Wonderland.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
